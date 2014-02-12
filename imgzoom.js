@@ -1,0 +1,209 @@
+/* imgzoom.js -- (C) 2014-02-11, Christian Augustin (caugustin.de) */
+/*
+	Dependencies:
+
+	none
+	
+	
+	
+	ToDo:
+	
+	- Firefox 4 u. 5 bugfixing.
+	- Configurable img preload (via CSS classes).
+	- Configurable delays and times (via CSS classes).
+	- Make use of link title, img title and img alt.
+	- Make all img zoom links nown to the zoom object for prev/next option.
+	- Get data from DOM when needed?
+	- Extract additional classes from link and img (framing, shadows etc.)?
+	- Special CSS classes to modify imgzoom behavior (e.g. imgzoom-gallery).
+
+	Don't:
+	- Load-spinner for image. (Bad idea, creates dependency!)
+	- Configuration via JS (creates dependency), use CSS classes instead!
+
+*/
+/*
+	History:
+	2014-02-11 caugustin.de - Print only zoomed image if visible.
+	2014-02-11 caugustin.de - Utility functions extended, FF 4+5 bugfix.
+	2014-02-06 caugustin.de - FP style refactoring, CSS optimization.
+	2014-02-05 caugustin.de - First fully functional version, first CSS.
+	2014-02-04 caugustin.de - Initial setup.
+
+*/
+
+
+
+(function(){
+
+	if (!document.querySelectorAll) return;
+	
+	var openDelay =  25,
+		openTime  = 500,
+		closeTime = 500;
+
+
+
+	/* Utility functions ... */
+	
+	// General utilities:
+	function forEach(l, f) { for (i = 0; i < l.length; i++) f(l[i], i) }
+	function trim(s) { return s.replace(/^\s+|\s+$/g, '') }
+    
+	// Browser utilities:
+	function noSVG() {
+		return !document.implementation.hasFeature(
+        'http://www.w3.org/TR/SVG11/feature#Image', '1.1')
+    }
+	function getScrollY() {
+		if (self.pageYOffset) return self.pageYOffset; 
+		if (document.documentElement && document.documentElement.scrollTop)
+			return document.documentElement.scrollTop;
+		if (document.body) return document.body.scrollTop;
+		return 0;
+	}
+	function ready(fn) {
+		if (document.addEventListener) {
+			document.addEventListener('DOMContentLoaded', fn, false);
+		}
+		else if (document.attachEvent) {
+			document.attachEvent('onreadystatechange', function(){
+				if (document.readyState.match(/loaded|complete/)) fn();
+			});
+		}
+	}
+	var supports = (function() {
+		var s = document.createElement('div').style,
+		    v = 'Khtml Ms O Moz Webkit'.split(' ');
+		return function(p) {
+			if (p in s) return true;
+			p = p.replace(/^[a-z]/, function(c){return c.toUpperCase()});
+			var l = v.length;
+			while(l--) { if (v[l] + p in s) return true; }
+			return false;
+		};
+	})();	
+	
+    // Class string operations:
+    function classNameHas(s, c) {
+    	return new RegExp('(^|\\b)' + c + '(\\b|$)').test(s);
+    }
+    function classNameAdd(s, c) {
+    	if (classNameHas(s, c)) return s;
+    	return (s) ? s + ' ' + c : c;
+    }
+    function classNameReplace(s, a, b) {
+    	return s.replace(
+			new RegExp('(^|\\s+)' + a + '(\\s+|$)', 'g'),
+			function(m, pe1, pe2){
+				return ((b && pe1) ? ' ' : '') + b + ((b && pe2) ? ' ' : '')
+			} 
+		);
+    }
+
+	// Element operations:
+	function create(n, c) {
+		var e = document.createElement(n);
+		if (c) e.className = c;
+		return e;
+	}
+	function hide(e) { e.style.display = 'none'; return e; }
+	function show(e) { e.style.display = ''; return e; }
+	function append(p, e) { return p.appendChild(e) }
+	function prepend(p, e) { return p.insertBefore(e, p.firstChild) }
+	function parent(e) { return e.parentNode }
+	function remove(e) { return e.parentNode.removeChild(e) }
+	function getElements(e, sel) { return e.querySelectorAll(sel) }
+	function addEvent(e, evt, fn) {
+		if (e.addEventListener) e.addEventListener(evt, fn, false)
+		else e.attachEvent('on'+evt, fn);
+		return e;
+	}
+	function removeEvent(e, evt, fn) {
+		if (e.removeEventListener) e.removeEventListener(evt, fn, false)
+		else e.detachEvent('on'+evt, fn);
+		return e;
+	}
+	
+	// Class operations:
+	function hasClass(e, c) { return classNameHas(e.className, c) }
+	function addClass(e, c) {
+		if (!hasClass(e, c)) e.className += (e.className) ? ' ' + c : c;
+		return e;
+	}
+	function replaceClass(e, o, n) {
+		e.className = classNameReplace(e.className, o, n);
+		return e;
+	}
+	function removeClass(e, c) {
+		e.className = classNameReplace(e.className, c, '');
+		return e;
+	}
+	
+	
+	
+	/* Functions ... */
+	
+	function createZoom() {
+		var z       = create('div', 'imgzoom-container imgzoom-closed');
+		z._overlay  = append(z, create('div', 'imgzoom-overlay'));
+		z._wrapper  = append(z, create('div', 'imgzoom-wrapper'));
+		z._frame    = append(z._wrapper, create('div', 'imgzoom-frame'));
+		z._img      = append(z._frame,   create('img'));
+		z._close    = append(z, create('div', 'imgzoom-close'));
+
+		addEvent(z._overlay, 'click', function(){return close(z)});
+		addEvent(z._close,   'click', function(){return close(z)});
+
+		return hide(z);
+	}
+	function open(z, url) {
+		if (noSVG() && url && url.match(/\.svgz?$/i)) {
+			url = url.replace(/\.svgz?$/i, '.png');
+   		}
+		z._img.src = url;
+		z._wrapper.style.marginTop = getScrollY() + 'px';
+
+		show(z);
+		setTimeout(function(){return openBegin(z)}, openDelay)
+
+		return false;
+	}
+	function openBegin(z) {
+		replaceClass(z, 'imgzoom-closed', 'imgzoom-opening');
+		addClass(document.documentElement, 'imgzoom-visible');
+		setTimeout(function(){return openEnd(z)}, openTime);
+	}
+	function openEnd(z) {
+		replaceClass(z, 'imgzoom-opening', 'imgzoom-open');
+	}
+	function close(z) {
+		replaceClass(z, 'imgzoom-open', 'imgzoom-closing');
+		setTimeout(function(){return closeEnd(z)}, closeTime);
+		return false;
+	}
+	function closeEnd(z) {
+		replaceClass(z, 'imgzoom-closing', 'imgzoom-closed');
+		removeClass(document.documentElement, 'imgzoom-visible');
+		z.style.display = 'none';
+	}
+	
+	
+	
+	/* Initialization ... */
+	
+	ready(function(){
+		if (!document.documentElement || !document.body) return;
+		if (!supports('transition')) openDelay = openTime = closeTime = 0;
+
+		var zoom = append(document.body, createZoom());
+		addClass(document.documentElement, 'imgzoom-active');
+		
+		forEach(getElements(document, 'a.imgzoom'), function(zAnchor){
+			zAnchor.onclick = function(){return open(zoom, zAnchor.href)};
+			addClass(zAnchor, 'imgzoom-attached');
+		});
+	});
+	
+}).call(this);
+
