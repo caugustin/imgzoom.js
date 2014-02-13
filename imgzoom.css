@@ -25,16 +25,19 @@
 .imgzoom img,
 .imgzoom object { position: relative; vertical-align: middle; z-index: -2; }
 
+.imgzoom {
+	border: 1px solid blue;
+}
+
 .imgzoom-attached:after {
-	content: ' ';
 	position: absolute;
-	top: 4px;
-	right: 0px;
-	height: 24px;
-	width: 24px;
-	background: center center no-repeat url(_/imgzoom-icon_24x24px.png);
-	background: center center no-repeat url(_/imgzoom-icon_24x24px_2x.png) rgba(255, 255, 255, 0.0);
-	background-size: 24px 24px;
+	bottom: 0;
+	left: 0;
+	background: white;
+	background: rgba(255, 255, 255, 0.7);
+	content: '+';
+	font: 1.5em/1em sans-serif;
+	padding: 0.05em 0.3em 0.2em 0.3em;
 }
 
 
@@ -86,12 +89,21 @@
 	opacity: 0.8;
 	background-color: black;
 }
+.imgzoom-overlay:after {
+	position: absolute;
+	right: 0;
+	top: 0;
+	color: white;
+	content: '×';
+	font: 2em/1em sans-serif;
+	padding: 0.05em 0.3em 0.2em 0.3em;
+}
 
 
 /* Wrapper */
 
 .imgzoom-wrapper {
-	padding: 50px 0;
+	text-align: center;
 }
 
 
@@ -99,10 +111,11 @@
 
 .imgzoom-frame {
 	position: relative;
-	max-width: 90%;
-	min-height: 200px;
-	margin: 0 auto;
-	text-align: center;
+	display: inline-block;
+	min-width: 10px;
+	min-height: 10px;
+	margin: 50px;
+	padding: 5px;
 	background: black;
 	z-index: 10;
 }
@@ -117,7 +130,8 @@
 /* Image */
 
 .imgzoom-frame img {
-	width: 100%;
+	vertical-align: middle;
+	max-width: 100%;
 	height: auto;
 	visibility: hidden;
 }
@@ -132,19 +146,9 @@
 .imgzoom-close {
 	cursor: pointer;
 	position: fixed;
-	right: 10px;
-	top: 10px;
-	background: rgb(255, 255, 255); /* Fallback */
-	background: rgba(255, 255, 255, 0.8);
-	border-radius: 5px;
-	padding: 5px 10px;
+	right: 0px;
+	top: 0px;
 	z-index: 100;
-}
-.imgzoom-close:after {
-	content: 'Close';
-}
-[lang|="de"] .imgzoom-close:after {
-	content: 'Schließen';
 }
 
 
