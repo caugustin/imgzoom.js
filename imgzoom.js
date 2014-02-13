@@ -1,4 +1,4 @@
-/* imgzoom.js -- (C) 2014-02-11, Christian Augustin (caugustin.de) */
+/* imgzoom.js -- (C) 2014-02-13, Christian Augustin (caugustin.de) */
 /*
 	Dependencies:
 
@@ -24,6 +24,7 @@
 */
 /*
 	History:
+	2014-02-13 caugustin.de - Utility functions refactored.
 	2014-02-11 caugustin.de - Print only zoomed image if visible.
 	2014-02-11 caugustin.de - Utility functions extended, FF 4+5 bugfix.
 	2014-02-06 caugustin.de - FP style refactoring, CSS optimization.
@@ -49,18 +50,21 @@
 	// General utilities:
 	function forEach(l, f) { for (i = 0; i < l.length; i++) f(l[i], i) }
 	function trim(s) { return s.replace(/^\s+|\s+$/g, '') }
-    
+
 	// Browser utilities:
 	function noSVG() {
 		return !document.implementation.hasFeature(
         'http://www.w3.org/TR/SVG11/feature#Image', '1.1')
     }
-	function getScrollY() {
-		if (self.pageYOffset) return self.pageYOffset; 
-		if (document.documentElement && document.documentElement.scrollTop)
-			return document.documentElement.scrollTop;
-		if (document.body) return document.body.scrollTop;
-		return 0;
+	function getScroll() {
+		var de = document.documentElement, db = document.body, s = self;
+		if (s.pageXOffset != null)
+			return { x: s.pageXOffset, y: s.pageYOffset }; 
+		if (de && de.scrollLeft != null)
+			return { x: de.scrollLeft, y: de.scrollTop };
+		if (db && db.scrollLeft != null)
+			return { x: db.scrollLeft, y: db.scrollTop };
+		return { x: 0, y: 0 };
 	}
 	function ready(fn) {
 		if (document.addEventListener) {
@@ -162,7 +166,7 @@
 			url = url.replace(/\.svgz?$/i, '.png');
    		}
 		z._img.src = url;
-		z._wrapper.style.marginTop = getScrollY() + 'px';
+		z._wrapper.style.marginTop = getScroll().y + 'px';
 
 		show(z);
 		setTimeout(function(){return openBegin(z)}, openDelay)
@@ -185,7 +189,7 @@
 	function closeEnd(z) {
 		replaceClass(z, 'imgzoom-closing', 'imgzoom-closed');
 		removeClass(document.documentElement, 'imgzoom-visible');
-		z.style.display = 'none';
+		hide(z);
 	}
 	
 	
