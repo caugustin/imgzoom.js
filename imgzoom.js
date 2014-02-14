@@ -147,18 +147,16 @@
 	
 	
 	/* Functions ... */
-	
 	function createZoom() {
-		var z       = create('div', 'imgzoom-container imgzoom-closed');
-		z._overlay  = append(z, create('div', 'imgzoom-overlay'));
-		z._wrapper  = append(z, create('div', 'imgzoom-wrapper'));
-		z._frame    = append(z._wrapper, create('div', 'imgzoom-frame'));
+		var z       = create('div', 'iz-container iz-closed');
+		z._overlay  = append(z, create('div', 'iz-overlay'));
+		z._wrapper  = append(z, create('div', 'iz-wrapper'));
+		z._frame    = append(z._wrapper, create('div', 'iz-frame'));
 		z._img      = append(z._frame,   create('img'));
-		z._close    = append(z, create('div', 'imgzoom-close'));
+		z._close    = append(z, create('div', 'iz-close'));
 
 		addEvent(z._overlay, 'click', function(){return close(z)});
 		addEvent(z._close,   'click', function(){return close(z)});
-
 		return hide(z);
 	}
 	function open(z, url) {
@@ -169,26 +167,27 @@
 		z._wrapper.style.marginTop = getScroll().y + 'px';
 
 		show(z);
+		/* `openDelay` is necessary for browsers to start a CSS transition. */
 		setTimeout(function(){return openBegin(z)}, openDelay)
 
 		return false;
 	}
 	function openBegin(z) {
-		replaceClass(z, 'imgzoom-closed', 'imgzoom-opening');
-		addClass(document.documentElement, 'imgzoom-visible');
+		replaceClass(z, 'iz-closed', 'iz-opening');
+		addClass(document.documentElement, 'iz-visible');
 		setTimeout(function(){return openEnd(z)}, openTime);
 	}
 	function openEnd(z) {
-		replaceClass(z, 'imgzoom-opening', 'imgzoom-open');
+		replaceClass(z, 'iz-opening', 'iz-open');
 	}
 	function close(z) {
-		replaceClass(z, 'imgzoom-open', 'imgzoom-closing');
+		replaceClass(z, 'iz-open', 'iz-closing');
 		setTimeout(function(){return closeEnd(z)}, closeTime);
 		return false;
 	}
 	function closeEnd(z) {
-		replaceClass(z, 'imgzoom-closing', 'imgzoom-closed');
-		removeClass(document.documentElement, 'imgzoom-visible');
+		replaceClass(z, 'iz-closing', 'iz-closed');
+		removeClass(document.documentElement, 'iz-visible');
 		hide(z);
 	}
 	
@@ -201,11 +200,11 @@
 		if (!supports('transition')) openDelay = openTime = closeTime = 0;
 
 		var zoom = append(document.body, createZoom());
-		addClass(document.documentElement, 'imgzoom-active');
+		addClass(document.documentElement, 'iz-active');
 		
 		forEach(getElements(document, 'a.imgzoom'), function(zAnchor){
 			zAnchor.onclick = function(){return open(zoom, zAnchor.href)};
-			addClass(zAnchor, 'imgzoom-attached');
+			addClass(zAnchor, 'iz-attached');
 		});
 	});
 	
