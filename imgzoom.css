@@ -1,5 +1,6 @@
 /* zoomimg.css */
 
+/*
 .iz-container,
 .iz-overlay,
 .iz-frame,
@@ -11,7 +12,7 @@
 	-o-transition: all 0.5s ease-in-out;
 	transition: all 0.5s ease-in-out;
 }
-
+*/
 .imgzoom {
     display: inline-block;
     position: relative;
@@ -39,23 +40,27 @@
 	z-index: 10000;
 	left: 0;
 	top: 0;
-	width:  100%;
+	width: 100%;
+    /*
 	-webkit-opacity: 0.0;
 	-khtml-opacity: 0.0;
 	-moz-opacity: 0.0;
 	-ms-opacity: 0.0;
 	-o-opacity: 0.0;
 	opacity: 0.0;
+    */
     visibility: hidden;
 }
 .iz-container.iz-opening,
 .iz-container.iz-open {
+    /*
 	-webkit-opacity: 1.0;
 	-khtml-opacity: 1.0;
 	-moz-opacity: 1.0;
 	-ms-opacity: 1.0;
 	-o-opacity: 1.0;
 	opacity: 1.0;
+    */
 	visibility: visible;
 }
 .iz-closing {

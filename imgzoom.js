@@ -24,6 +24,7 @@
 */
 /*
 	History:
+    2014-02-13 caugustin.de - Trying to implement JS fades (IE8+9).
 	2014-02-13 caugustin.de - Utility functions refactored.
 	2014-02-11 caugustin.de - Print only zoomed image if visible.
 	2014-02-11 caugustin.de - Utility functions extended, FF 4+5 bugfix.
@@ -143,7 +144,29 @@
 		e.className = classNameReplace(e.className, c, '');
 		return e;
 	}
-	
+
+	// Fade in/out:
+    function fadeIn(e) {
+        var opacity = 0;
+
+        e.style.opacity = 0;
+        e.style.filter = '';
+
+        var last = +new Date();
+        var tick = function() {
+            opacity += (new Date() - last) / 400;
+            e.style.opacity = opacity;
+            e.style.filter = 'alpha(opacity=' + (100 * opacity) + ')';
+            last = +new Date();
+
+            if (opacity < 1) {
+                (window.requestAnimationFrame && requestAnimationFrame(tick))
+                || setTimeout(tick, 16);
+            }
+        };
+
+        tick();
+    }
 	
 	
 	/* Functions ... */
@@ -175,6 +198,7 @@
 	function openBegin(z) {
 		replaceClass(z, 'iz-closed', 'iz-opening');
 		addClass(document.documentElement, 'iz-visible');
+        fadeIn(z);
 		setTimeout(function(){return openEnd(z)}, openTime);
 	}
 	function openEnd(z) {
@@ -197,7 +221,7 @@
 	
 	ready(function(){
 		if (!document.documentElement || !document.body) return;
-		if (!supports('transition')) openDelay = openTime = closeTime = 0;
+		//if (!supports('transition')) openDelay = openTime = closeTime = 0;
 
 		var zoom = append(document.body, createZoom());
 		addClass(document.documentElement, 'iz-active');
