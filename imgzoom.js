@@ -223,5 +223,29 @@
 		return e;
 	}
 
+	// Fade in/out:
+    function fadeIn(e) {
+        var opacity = 0;
+
+        e.style.opacity = 0;
+        e.style.filter = '';
+
+        var last = +new Date();
+        var tick = function() {
+            opacity += (new Date() - last) / 400;
+            e.style.opacity = opacity;
+            e.style.filter = 'alpha(opacity=' + (100 * opacity) + ')';
+            last = +new Date();
+
+            if (opacity < 1) {
+                (window.requestAnimationFrame && requestAnimationFrame(tick))
+                || setTimeout(tick, 16);
+            }
+        };
+
+        tick();
+    }
+	
+
 }).call(this);
 
