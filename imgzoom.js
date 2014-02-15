@@ -2,7 +2,7 @@
 /*
     == Dependencies ==
 
-	- None.
+	- imgzoom.css
 	
 	
 	== ToDo ==
@@ -56,7 +56,7 @@
 			url = url.replace(/\.svgz?$/i, '.png');
    		}
         setAttr( z._img,     'src',       url);
-        setAttr( z._img,     'height',    getVisibleArea().h - 100);
+        // setAttr( z._img,     'height',    getVisibleArea().h - 100);
         setStyle(z._wrapper, 'marginTop', getScroll().y + 'px');
 		show(z);
 		// Necessary for browsers to start a CSS transition:

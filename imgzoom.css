@@ -102,8 +102,8 @@
 .iz-frame img {
 	vertical-align: middle;
 	visibility: hidden;
-	/* max-width: 100%; */
-	/* height: auto; */
+	max-width: 100%;
+	height: auto;
 }
 .iz-open img {
 	visibility: visible;
