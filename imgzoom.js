@@ -1,39 +1,36 @@
-/* imgzoom.js -- (C) 2014-02-13, Christian Augustin (caugustin.de) */
+/* imgzoom.js -- (C) 2014-02-15, Christian Augustin (caugustin.de) */
 /*
-	Dependencies:
+    == Dependencies ==
 
-	none
+	- None.
 	
 	
+	== ToDo ==
 	
-	ToDo:
-	
-	- Firefox 4 u. 5 bugfixing.
 	- Configurable img preload (via CSS classes).
 	- Configurable delays and times (via CSS classes).
+	- Load-spinner for image (using data URL).
 	- Make use of link title, img title and img alt.
-	- Make all img zoom links nown to the zoom object for prev/next option.
+	- Make all img zoom links known to the zoom object for prev/next option.
 	- Get data from DOM when needed?
 	- Extract additional classes from link and img (framing, shadows etc.)?
 	- Special CSS classes to modify imgzoom behavior (e.g. imgzoom-gallery).
 
 	Don't:
-	- Load-spinner for image. (Bad idea, creates dependency!)
 	- Configuration via JS (creates dependency), use CSS classes instead!
 
-*/
-/*
-	History:
-	2014-02-13 caugustin.de - Utility functions refactored.
-	2014-02-11 caugustin.de - Print only zoomed image if visible.
-	2014-02-11 caugustin.de - Utility functions extended, FF 4+5 bugfix.
-	2014-02-06 caugustin.de - FP style refactoring, CSS optimization.
-	2014-02-05 caugustin.de - First fully functional version, first CSS.
-	2014-02-04 caugustin.de - Initial setup.
+	== History ==
+
+    2014-02-15 caugustin.de   Close button is back (can use z-index)!
+    2014-02-15 caugustin.de   Trying to include fixed img height.
+	2014-02-13 caugustin.de   Utility functions refactored.
+	2014-02-11 caugustin.de   Print only zoomed image if visible.
+	2014-02-11 caugustin.de   Utility functions extended, FF 4+5 bugfix.
+	2014-02-06 caugustin.de   FP style refactoring, CSS optimization.
+	2014-02-05 caugustin.de   First fully functional version, first CSS.
+	2014-02-04 caugustin.de   Initial setup.
 
 */
-
-
 
 (function(){
 
@@ -43,9 +40,73 @@
 		openTime  = 500,
 		closeTime = 500;
 
+	function createZoom() {
+		var z       = create('div', 'iz-container iz-closed');
+		z._overlay  = append(z, create('div', 'iz-overlay'));
+		z._wrapper  = append(z, create('div', 'iz-wrapper'));
+		z._frame    = append(z._wrapper, create('div', 'iz-frame'));
+		z._img      = append(z._frame,   create('img'));
+		z._close    = append(z, create('div', 'iz-close'));
+		addEvent(z._overlay, 'click', function(){return close(z)});
+		addEvent(z._close,   'click', function(){return close(z)});
+		return hide(z);
+	}
+	function open(z, url) {
+		if (noSVG() && url && url.match(/\.svgz?$/i)) {
+			url = url.replace(/\.svgz?$/i, '.png');
+   		}
+        setAttr( z._img,     'src',       url);
+        setAttr( z._img,     'height',    getVisibleArea().h - 100);
+        setStyle(z._wrapper, 'marginTop', getScroll().y + 'px');
+		show(z);
+		// Necessary for browsers to start a CSS transition:
+		setTimeout(function(){return openBegin(z)}, openDelay)
+		return false;
+	}
+	function openBegin(z) {
+		replaceClass(z, 'iz-closed', 'iz-opening');
+		addClass(document.documentElement, 'iz-visible');
+		setTimeout(function(){return openEnd(z)}, openTime);
+	}
+	function openEnd(z) {
+		replaceClass(z, 'iz-opening', 'iz-open');
+	}
+	function close(z) {
+		replaceClass(z, 'iz-open', 'iz-closing');
+		setTimeout(function(){return closeEnd(z)}, closeTime);
+		return false;
+	}
+	function closeEnd(z) {
+		replaceClass(z, 'iz-closing', 'iz-closed');
+		removeClass(document.documentElement, 'iz-visible');
+		hide(z);
+	}
+	
+	
+	
+	/* -------------------------------------------
+       Initialization
+    */
+	
+	ready(function(){
+		if (!document.documentElement || !document.body) return;
+		if (!supports('transition')) openDelay = openTime = closeTime = 0;
+
+		var zoom = append(document.body, createZoom());
+		addClass(document.documentElement, 'iz-active');
+		
+		forEach(getElements(document, 'a.imgzoom'), function(zAnchor){
+			zAnchor.onclick = function(){return open(zoom, zAnchor.href)};
+			addClass(zAnchor, 'iz-attached');
+		});
+	});
 
 
-	/* Utility functions ... */
+
+
+	/* ------------------------------------------- 
+       Utility functions ...
+    */
 	
 	// General utilities:
 	function forEach(l, f) { for (i = 0; i < l.length; i++) f(l[i], i) }
@@ -86,7 +147,11 @@
 			while(l--) { if (v[l] + p in s) return true; }
 			return false;
 		};
-	})();	
+	})();
+    function getVisibleArea() {
+        var html = document.documentElement;
+        return { w: html.clientWidth || 0, h: html.clientHeight || 0 }
+    }
 	
     // Class string operations:
     function classNameHas(s, c) {
@@ -128,7 +193,21 @@
 		else e.detachEvent('on'+evt, fn);
 		return e;
 	}
-	
+    function getAttr(e, attr) { return e[attr] }
+    function setAttr(e, attr, val) {
+        e[attr] = val;
+        return e;
+    }
+    function setStyle(e, prop, val) {
+        e.style[prop] = val;
+        return e;
+    }
+    function getStyle(e, prop) { return e[prop] }
+    function getComputedStyle(e, prop) {
+        var s = e.currentStyle || window.getComputedStyle(e, null);
+        return s[prop];
+    }
+
 	// Class operations:
 	function hasClass(e, c) { return classNameHas(e.className, c) }
 	function addClass(e, c) {
@@ -143,70 +222,6 @@
 		e.className = classNameReplace(e.className, c, '');
 		return e;
 	}
-	
-	
-	
-	/* Functions ... */
-	function createZoom() {
-		var z       = create('div', 'iz-container iz-closed');
-		z._overlay  = append(z, create('div', 'iz-overlay'));
-		z._wrapper  = append(z, create('div', 'iz-wrapper'));
-		z._frame    = append(z._wrapper, create('div', 'iz-frame'));
-		z._img      = append(z._frame,   create('img'));
-		z._close    = append(z, create('div', 'iz-close'));
 
-		addEvent(z._overlay, 'click', function(){return close(z)});
-		addEvent(z._close,   'click', function(){return close(z)});
-		return hide(z);
-	}
-	function open(z, url) {
-		if (noSVG() && url && url.match(/\.svgz?$/i)) {
-			url = url.replace(/\.svgz?$/i, '.png');
-   		}
-		z._img.src = url;
-		z._wrapper.style.marginTop = getScroll().y + 'px';
-
-		show(z);
-		/* `openDelay` is necessary for browsers to start a CSS transition. */
-		setTimeout(function(){return openBegin(z)}, openDelay)
-
-		return false;
-	}
-	function openBegin(z) {
-		replaceClass(z, 'iz-closed', 'iz-opening');
-		addClass(document.documentElement, 'iz-visible');
-		setTimeout(function(){return openEnd(z)}, openTime);
-	}
-	function openEnd(z) {
-		replaceClass(z, 'iz-opening', 'iz-open');
-	}
-	function close(z) {
-		replaceClass(z, 'iz-open', 'iz-closing');
-		setTimeout(function(){return closeEnd(z)}, closeTime);
-		return false;
-	}
-	function closeEnd(z) {
-		replaceClass(z, 'iz-closing', 'iz-closed');
-		removeClass(document.documentElement, 'iz-visible');
-		hide(z);
-	}
-	
-	
-	
-	/* Initialization ... */
-	
-	ready(function(){
-		if (!document.documentElement || !document.body) return;
-		if (!supports('transition')) openDelay = openTime = closeTime = 0;
-
-		var zoom = append(document.body, createZoom());
-		addClass(document.documentElement, 'iz-active');
-		
-		forEach(getElements(document, 'a.imgzoom'), function(zAnchor){
-			zAnchor.onclick = function(){return open(zoom, zAnchor.href)};
-			addClass(zAnchor, 'iz-attached');
-		});
-	});
-	
 }).call(this);
 

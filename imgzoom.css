@@ -76,7 +76,7 @@
 	-ms-opacity: 0.8;
 	-o-opacity: 0.8;
 	opacity: 0.8;
-	background: black top right no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAA1CAYAAADh5qNwAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAADjSURBVHja7NndCsMgDIZhE3b/t5wdDWTU0i35Ii1vzhUff2JsLSLG08LHAwMUKFCgQIECBQoUqFvHK9PYzEZEhJlZ1YA+/WWeRJZ8T8UEtArQPLYt22+GRHZ2pvbZCUqfqQpYJagsUWRg1aDS7PcPTAEqT+m/wFQgyT11BaYEyS7fM5gaJK0ojmAdIHmZtFoxJail9vsGqEEtqLMzdUvUasupYd4J6oJ55wp1wbwT1AXzblAHzHeA1DDfBVLCfCdIBeMbxWqGq0qfqv6Mv/OgQIECBQoUKFCgQIHSxxsAAP//AwA2C61tyVj+VgAAAABJRU5ErkJggg==);
+	background: black;
 }
 
 .iz-wrapper {
@@ -86,9 +86,7 @@
 .iz-frame {
 	position: relative;
 	display: inline-block;
-	min-width: 100px;
 	max-width: 90%;
-	min-height: 100px;
 	margin: 50px auto;
 	padding: 5px;
 	background: black;
@@ -103,12 +101,23 @@
 
 .iz-frame img {
 	vertical-align: middle;
-	max-width: 100%;
-	height: auto;
 	visibility: hidden;
+	/* max-width: 100%; */
+	/* height: auto; */
 }
 .iz-open img {
 	visibility: visible;
+}
+
+.iz-close {
+	position: fixed;
+	cursor: pointer;
+	z-index: 100;
+	top: 0;
+	right: 0;
+	width: 53px;
+	height: 53px;
+	background: no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAA1CAYAAADh5qNwAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAADjSURBVHja7NndCsMgDIZhE3b/t5wdDWTU0i35Ii1vzhUff2JsLSLG08LHAwMUKFCgQIECBQoUqFvHK9PYzEZEhJlZ1YA+/WWeRJZ8T8UEtArQPLYt22+GRHZ2pvbZCUqfqQpYJagsUWRg1aDS7PcPTAEqT+m/wFQgyT11BaYEyS7fM5gaJK0ojmAdIHmZtFoxJail9vsGqEEtqLMzdUvUasupYd4J6oJ55wp1wbwT1AXzblAHzHeA1DDfBVLCfCdIBeMbxWqGq0qfqv6Mv/OgQIECBQoUKFCgQIHSxxsAAP//AwA2C61tyVj+VgAAAABJRU5ErkJggg==);
 }
 
 @media print {
