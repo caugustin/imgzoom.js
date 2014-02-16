@@ -214,12 +214,11 @@
         return e;
     }
     function replaceClass(e, o, n) {
-        e.className = classNameReplace(e.className, o, n);
+        if (hasClass(e, o)) e.className = classNameReplace(e.className, o, n);
         return e;
     }
     function removeClass(e, c) {
-        e.className = classNameReplace(e.className, c, '');
-        return e;
+        return replaceClass(e, c, '');
     }
 
     // Fade in/out:
