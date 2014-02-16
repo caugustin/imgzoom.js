@@ -1,9 +1,7 @@
 /* zoomimg.css */
 
 .iz-container,
-.iz-overlay,
 .iz-frame,
-.iz-img,
 .iz-close {
     -webkit-transition: all 0.5s ease-in-out;
     -moz-transition: all 0.5s ease-in-out;
@@ -90,24 +88,30 @@
     max-width: 90%;
     margin: 50px auto;
     padding: 5px;
-    background: black;
-}
-.iz-opening .iz-frame,
-.iz-open .iz-frame {
     background: white;
+    -webkit-opacity: 0.0;
+    -khtml-opacity: 0.0;
+    -moz-opacity: 0.0;
+    -ms-opacity: 0.0;
+    -o-opacity: 0.0;
+    opacity: 0.0;
 }
-.iz-closing .iz-frame {
-    background: black;
+.iz-frame.iz-frame-show {
+    -webkit-opacity: 1.0;
+    -khtml-opacity: 1.0;
+    -moz-opacity: 1.0;
+    -ms-opacity: 1.0;
+    -o-opacity: 1.0;
+    opacity: 1.0;
 }
-
 .iz-frame img {
     vertical-align: middle;
-    visibility: hidden;
+    /* visibility: hidden; */
     max-width: 100%;
     height: auto;
 }
 .iz-open img {
-    visibility: visible;
+    /* visibility: visible; */
 }
 
 .iz-close {

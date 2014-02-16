@@ -51,15 +51,28 @@
         addEvent(z._close,   'click', function(){return close(z)});
         return hide(z);
     }
+    function placeImage(z, url) {
+        setAttr(z._img, 'src', '');
+        var i = new Image();
+        i.onload = function() {
+            i._nw = i.width;
+            i._nh = i.height;
+            setAttr(z._img, 'src', url);
+            addClass(z._frame, 'iz-frame-show');
+        }
+        setAttr(i, 'src', url);
+        return i;
+    }
     function open(z, url) {
         if (noSVG() && url && url.match(/\.svgz?$/i)) {
             url = url.replace(/\.svgz?$/i, '.png');
         }
-        setAttr( z._img,     'src',       url);
         setStyle(z._wrapper, 'marginTop', getScroll().y + 'px');
+        removeClass(z._frame, 'iz-frame-show');
         show(z);
         // Necessary for browsers to start a CSS transition:
-        setTimeout(function(){return openBegin(z)}, openDelay)
+        setTimeout(function(){placeImage(z, url)}, openDelay);
+        setTimeout(function(){openBegin(z)}, openDelay);
         return false;
     }
     function openBegin(z) {
