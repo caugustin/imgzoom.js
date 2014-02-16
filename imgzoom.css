@@ -1,15 +1,5 @@
 /* zoomimg.css */
 
-.iz-container,
-.iz-frame,
-.iz-close {
-    -webkit-transition: all 0.5s ease-in-out;
-    -moz-transition: all 0.5s ease-in-out;
-    -ms-transition: all 0.5s ease-in-out;
-    -o-transition: all 0.5s ease-in-out;
-    transition: all 0.5s ease-in-out;
-}
-
 .imgzoom {
     display: inline-block;
     position: relative;
@@ -32,23 +22,22 @@
     background: center center no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAQNJREFUeNpi/P///2YGKgImBioDqhvIQopiQ0NDiwsXLoigiwODbQtZBkZGRj6xtLR8B2KvWLFC7v379xzoahjJiZTo6GitZcuWKQkKCv4AGYrsQpLDMCYmBmxYVFTUvYiIiEcURQrIsKVLl4INA9LXQMFHtoHPnj1j3bNnjwSSYQwKCgrfDQwM3pIdhiBDpaSkflOUDkGGwNiEDMMwEJjOLLu6umSQYxMoZotsKEkGAhOt8IMHD7iQk4arq+sLYlyG18sww4D0vSVLllwjJSWgRAojI6MPLLGSYxhWF4IMAxnKx8f3JysrSw05TMlyIboCYDp7c/78+RNkGTgyCliAAAMA0d+GcQyXHRQAAAAASUVORK5CYII=);
     background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAsIDAsIDIwLCAyMCI+CiAgICA8Zz4KICAgICAgPHBhdGggZD0iTTAsMCBMMjAsMCBMMjAsMjAgTDAsMjAgeiIgZmlsbD0iI0ZGRkZGRiIgZmlsbC1vcGFjaXR5PSIwLjciLz4KICAgICAgPHBhdGggZD0iTTguMjIsMTAuNzE5IEw5LjI4LDExLjc4IEw1LjU2MSwxNS41IEw4Ljc1LDE1LjUgTDguNzUsMTcgTDMsMTcgTDMsMTEuMjUgTDQuNSwxMS4yNSBMNC41LDE0LjQzOCB6IiBmaWxsPSIjMDAwMDAwIi8+CiAgICAgIDxwYXRoIGQ9Ik0xMS43ODEsOS4yODEgTDEwLjcyLDguMjIgTDE0LjQ0LDQuNSBMMTEuMjUsNC41IEwxMS4yNSwzIEwxNywzIEwxNyw4Ljc1IEwxNS41LDguNzUgTDE1LjUsNS41NjEgeiIgZmlsbD0iIzAwMDAwMCIvPgogICAgPC9nPgo8L3N2Zz4K), none;
 }
-
-.iz-container {
-    position: absolute;
-    z-index: 10000;
-    left: 0;
-    top: 0;
-    width:  100%;
+.iz-container,
+.if-frame {
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -ms-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
     -webkit-opacity: 0.0;
     -khtml-opacity: 0.0;
     -moz-opacity: 0.0;
     -ms-opacity: 0.0;
     -o-opacity: 0.0;
     opacity: 0.0;
-    visibility: hidden;
 }
-.iz-container.iz-opening,
-.iz-container.iz-open {
+.iz-container.iz-show,
+.iz-frame.iz-show {
     -webkit-opacity: 1.0;
     -khtml-opacity: 1.0;
     -moz-opacity: 1.0;
@@ -57,10 +46,13 @@
     opacity: 1.0;
     visibility: visible;
 }
-.iz-closing {
-    visibility: visible;
+.iz-container {
+    position: absolute;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
 }
-
 .iz-overlay {
     position: fixed;
     cursor: pointer;
@@ -77,11 +69,9 @@
     opacity: 0.8;
     background: black;
 }
-
 .iz-wrapper {
     text-align: center;
 }
-
 .iz-frame {
     position: relative;
     display: inline-block;
@@ -89,31 +79,13 @@
     margin: 50px auto;
     padding: 5px;
     background: white;
-    -webkit-opacity: 0.0;
-    -khtml-opacity: 0.0;
-    -moz-opacity: 0.0;
-    -ms-opacity: 0.0;
-    -o-opacity: 0.0;
-    opacity: 0.0;
-}
-.iz-frame.iz-frame-show {
-    -webkit-opacity: 1.0;
-    -khtml-opacity: 1.0;
-    -moz-opacity: 1.0;
-    -ms-opacity: 1.0;
-    -o-opacity: 1.0;
-    opacity: 1.0;
+    visibility: hidden;
 }
 .iz-frame img {
     vertical-align: middle;
-    /* visibility: hidden; */
     max-width: 100%;
     height: auto;
 }
-.iz-open img {
-    /* visibility: visible; */
-}
-
 .iz-close {
     position: fixed;
     cursor: pointer;
@@ -129,17 +101,10 @@
 @media print {
     .iz-attached:after { display: none; }
     .iz-visible body>* { display: none; }
-    .iz-visible body>.iz-container {
-        display: block;
-        position: relative;
-    }
-    .iz-visible .iz-wrapper {
-        margin-top: 0 !important;
-        padding: 0;
-    }
+    .iz-visible body>.iz-container { display: block; position: relative; }
+    .iz-visible .iz-wrapper { margin-top: 0 !important; }
+    .iz-visible .iz-frame   { margin: 0; }
     .iz-visible .iz-overlay,
-    .iz-visible .iz-close {
-        display: none;
-    }
+    .iz-visible .iz-close   { display: none; }
 }
 

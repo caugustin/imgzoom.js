@@ -21,6 +21,7 @@
 
     == History ==
 
+    2014-02-16 caugustin.de   Image load integrated, optimizations.
     2014-02-15 caugustin.de   Close button is back (can use z-index)!
     2014-02-15 caugustin.de   Trying to include fixed img height.
     2014-02-13 caugustin.de   Utility functions refactored.
@@ -41,7 +42,7 @@
         closeTime = 500;
 
     function createZoom() {
-        var z       = create('div', 'iz-container iz-closed');
+        var z       = create('div', 'iz-container');
         z._overlay  = append(z, create('div', 'iz-overlay'));
         z._wrapper  = append(z, create('div', 'iz-wrapper'));
         z._frame    = append(z._wrapper, create('div', 'iz-frame'));
@@ -52,13 +53,12 @@
         return hide(z);
     }
     function placeImage(z, url) {
-        setAttr(z._img, 'src', '');
         var i = new Image();
         i.onload = function() {
             i._nw = i.width;
             i._nh = i.height;
             setAttr(z._img, 'src', url);
-            addClass(z._frame, 'iz-frame-show');
+            addClass(z._frame, 'iz-show');
         }
         setAttr(i, 'src', url);
         return i;
@@ -68,7 +68,7 @@
             url = url.replace(/\.svgz?$/i, '.png');
         }
         setStyle(z._wrapper, 'marginTop', getScroll().y + 'px');
-        removeClass(z._frame, 'iz-frame-show');
+        setAttr(z._img, 'src', '');
         show(z);
         // Necessary for browsers to start a CSS transition:
         setTimeout(function(){placeImage(z, url)}, openDelay);
@@ -76,20 +76,19 @@
         return false;
     }
     function openBegin(z) {
-        replaceClass(z, 'iz-closed', 'iz-opening');
+        addClass(z, 'iz-show');
         addClass(document.documentElement, 'iz-visible');
         setTimeout(function(){return openEnd(z)}, openTime);
     }
     function openEnd(z) {
-        replaceClass(z, 'iz-opening', 'iz-open');
     }
     function close(z) {
-        replaceClass(z, 'iz-open', 'iz-closing');
+        removeClass(z, 'iz-show');
         setTimeout(function(){return closeEnd(z)}, closeTime);
         return false;
     }
     function closeEnd(z) {
-        replaceClass(z, 'iz-closing', 'iz-closed');
+        removeClass(z._frame, 'iz-show');
         removeClass(document.documentElement, 'iz-visible');
         hide(z);
     }
@@ -102,7 +101,7 @@
     
     ready(function(){
         if (!document.documentElement || !document.body) return;
-        if (!supports('transition')) openDelay = openTime = closeTime = 0;
+        if (!supports('transition')) openTime = closeTime = 0;
 
         var zoom = append(document.body, createZoom());
         addClass(document.documentElement, 'iz-active');
