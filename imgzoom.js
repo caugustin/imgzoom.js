@@ -1,5 +1,10 @@
-/* imgzoom.js -- (C) 2014-02-15, Christian Augustin (caugustin.de) */
-/*
+/*  imgzoom.js
+    ====
+    Christian Augustin (caugustin.de)
+    2014-02-04
+    2014-02-17 11:23
+
+
     == Dependencies ==
 
     - imgzoom.css
@@ -19,8 +24,10 @@
     Don't:
     - Configuration via JS (creates dependency), use CSS classes instead!
 
+
     == History ==
 
+    2014-02-17 caugustin.de   Load GIF integrated, optimizations.
     2014-02-16 caugustin.de   Image load integrated, optimizations.
     2014-02-15 caugustin.de   Close button is back (can use z-index)!
     2014-02-15 caugustin.de   Trying to include fixed img height.
@@ -58,6 +65,7 @@
             i._nw = i.width;
             i._nh = i.height;
             setAttr(z._img, 'src', url);
+            removeClass(z._overlay, 'iz-loading');
             addClass(z._frame, 'iz-show');
         }
         setAttr(i, 'src', url);
@@ -68,9 +76,10 @@
             url = url.replace(/\.svgz?$/i, '.png');
         }
         setStyle(z._wrapper, 'marginTop', getScroll().y + 'px');
+        addClass(z._overlay, 'iz-loading');
         setAttr(z._img, 'src', '');
         show(z);
-        // Necessary for browsers to start a CSS transition:
+        // Necessary for browsers to start a CSS transition after show():
         setTimeout(function(){placeImage(z, url)}, openDelay);
         setTimeout(function(){openBegin(z)}, openDelay);
         return false;
@@ -89,6 +98,7 @@
     }
     function closeEnd(z) {
         removeClass(z._frame, 'iz-show');
+        removeClass(z._overlay, 'iz-loading');
         removeClass(document.documentElement, 'iz-visible');
         hide(z);
     }
@@ -232,30 +242,6 @@
     function removeClass(e, c) {
         return replaceClass(e, c, '');
     }
-
-    // Fade in/out:
-    function fadeIn(e) {
-        var opacity = 0;
-
-        e.style.opacity = 0;
-        e.style.filter = '';
-
-        var last = +new Date();
-        var tick = function() {
-            opacity += (new Date() - last) / 400;
-            e.style.opacity = opacity;
-            e.style.filter = 'alpha(opacity=' + (100 * opacity) + ')';
-            last = +new Date();
-
-            if (opacity < 1) {
-                (window.requestAnimationFrame && requestAnimationFrame(tick))
-                || setTimeout(tick, 16);
-            }
-        };
-
-        tick();
-    }
-    
 
 }).call(this);
 
