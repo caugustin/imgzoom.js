@@ -42,6 +42,7 @@
 
 (function(){
 
+    'use strict';
     if (!document.querySelectorAll) return;
     
     var openDelay =  25,
@@ -130,7 +131,7 @@
     */
     
     // General utilities:
-    function forEach(l, f) { for (i = 0; i < l.length; i++) f(l[i], i) }
+    function forEach(l, f) { for (var i = 0; i < l.length; i++) f(l[i], i) }
     function trim(s) { return s.replace(/^\s+|\s+$/g, '') }
 
     // Browser utilities:
